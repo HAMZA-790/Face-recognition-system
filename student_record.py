@@ -1,6 +1,7 @@
 
 from tkinter import *
 from tkinter import ttk, messagebox
+from tkcalendar import DateEntry
 import pyodbc
 import cv2
 import os
@@ -99,8 +100,10 @@ class Face_Recognition_System1:
         Label(student_info_frame, text="Class Division", font=("arial", 11, "bold"), bg="white").grid(row=1, column=0,
                                                                                                       padx=5, pady=5,
                                                                                                       sticky=W)
-        Entry(student_info_frame, textvariable=self.var_div, font=("arial", 11), width=15).grid(row=1, column=1, padx=5,
-                                                                                                pady=5)
+        div_combo = ttk.Combobox(student_info_frame, textvariable=self.var_div, font=("arial", 11), state="readonly", width=13)
+        div_combo["values"] = ("Select Division", "A", "B", "C", "D", "E")
+        div_combo.current(0)
+        div_combo.grid(row=1, column=1, padx=5, pady=5)
         Label(student_info_frame, text="Roll No", font=("arial", 11, "bold"), bg="white").grid(row=1, column=2, padx=5,
                                                                                                pady=5, sticky=W)
         Entry(student_info_frame, textvariable=self.var_roll, font=("arial", 11), width=15).grid(row=1, column=3,
@@ -108,12 +111,14 @@ class Face_Recognition_System1:
 
         Label(student_info_frame, text="Gender", font=("arial", 11, "bold"), bg="white").grid(row=2, column=0, padx=5,
                                                                                               pady=5, sticky=W)
-        Entry(student_info_frame, textvariable=self.var_gender, font=("arial", 11), width=15).grid(row=2, column=1,
-                                                                                                   padx=5, pady=5)
+        gender_combo = ttk.Combobox(student_info_frame, textvariable=self.var_gender, font=("arial", 11), state="readonly", width=13)
+        gender_combo["values"] = ("Select Gender", "Male", "Female", "Other")
+        gender_combo.current(0)
+        gender_combo.grid(row=2, column=1, padx=5, pady=5)
         Label(student_info_frame, text="DOB", font=("arial", 11, "bold"), bg="white").grid(row=2, column=2, padx=5,
                                                                                            pady=5, sticky=W)
-        Entry(student_info_frame, textvariable=self.var_dob, font=("arial", 11), width=15).grid(row=2, column=3, padx=5,
-                                                                                                pady=5)
+        dob_entry = DateEntry(student_info_frame, textvariable=self.var_dob, font=("arial", 11), width=13, date_pattern='dd/mm/yyyy')
+        dob_entry.grid(row=2, column=3, padx=5, pady=5)
 
         Label(student_info_frame, text="Email", font=("arial", 11, "bold"), bg="white").grid(row=3, column=0, padx=5,
                                                                                              pady=5, sticky=W)
@@ -131,8 +136,10 @@ class Face_Recognition_System1:
         Label(student_info_frame, text="Teacher Name", font=("arial", 11, "bold"), bg="white").grid(row=4, column=2,
                                                                                                     padx=5, pady=5,
                                                                                                     sticky=W)
-        Entry(student_info_frame, textvariable=self.var_teacher, font=("arial", 11), width=15).grid(row=4, column=3,
-                                                                                                    padx=5, pady=5)
+        teacher_combo = ttk.Combobox(student_info_frame, textvariable=self.var_teacher, font=("arial", 11), state="readonly", width=13)
+        teacher_combo["values"] = ("Select Teacher", "mam aqsa sarfraz", "mam zanaib khali", "sir umer irshad", "sir ali haider", "sir talha")
+        teacher_combo.current(0)
+        teacher_combo.grid(row=4, column=3, padx=5, pady=5)
 
         # Radio Buttons
         radio_frame = Frame(Left_frame, bg="white")
@@ -181,9 +188,17 @@ class Face_Recognition_System1:
 
         cols = ["dep", "course", "year", "sem", "id", "name", "div", "roll", "gender", "dob", "email", "phone",
                 "address", "teacher", "photo"]
+        
+        # Optimized column widths to reduce scrolling
+        col_widths = {
+            "dep": 130, "course": 60, "year": 50, "sem": 40, "id": 35, 
+            "name": 120, "div": 40, "roll": 60, "gender": 60, "dob": 80, 
+            "email": 130, "phone": 90, "address": 130, "teacher": 120, "photo": 50
+        }
+        
         for c in cols:
             self.student_table.heading(c, text=c.upper())
-            self.student_table.column(c, width=100)
+            self.student_table.column(c, width=col_widths[c])
 
         self.student_table["show"] = "headings"
         self.student_table.pack(fill=BOTH, expand=1)
@@ -307,7 +322,7 @@ class Face_Recognition_System1:
                     os.makedirs(data_dir)
 
                 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-                cap = cv2.VideoCapture(0)
+                cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
                 if not cap.isOpened():
                     messagebox.showerror("Error", "Webcam not found. Check permissions or connection.",

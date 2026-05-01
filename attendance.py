@@ -18,6 +18,7 @@ class Attendance:
         self.var_atten_time = StringVar()
         self.var_atten_date = StringVar()
         self.var_atten_attendance = StringVar()
+        self.mydata = []
 
         # ================= TITLE =================
         title_lbl = Label(self.root, text="STUDENT ATTENDANCE SYSTEM", font=("times new roman", 35, "bold"), bg="white", fg="darkgreen")
@@ -106,27 +107,26 @@ class Attendance:
             self.AttendanceReportTable.insert("", END, values=i)
 
     def import_csv(self):
-        global mydata
-        mydata.clear()
+        self.mydata.clear()
         try:
             fln = filedialog.askopenfilename(initialdir=os.getcwd(), title="Open CSV", filetypes=(("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
             with open(fln) as myfile:
                 csvread = csv.reader(myfile, delimiter=",")
                 for i in csvread:
-                    mydata.append(i)
-            self.fetch_data(mydata)
+                    self.mydata.append(i)
+            self.fetch_data(self.mydata)
         except Exception as e:
             messagebox.showerror("Error", f"Could not import: {str(e)}", parent=self.root)
 
     def export_csv(self):
         try:
-            if len(mydata) < 1:
+            if len(self.mydata) < 1:
                 messagebox.showerror("Error", "No Data found to export", parent=self.root)
                 return False
             fln = filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Save CSV", defaultextension=".csv", filetypes=(("CSV File", "*.csv"), ("All File", "*.*")), parent=self.root)
             with open(fln, mode="w", newline="") as myfile:
                 exp_write = csv.writer(myfile, delimiter=",")
-                for i in mydata:
+                for i in self.mydata:
                     exp_write.writerow(i)
                 messagebox.showinfo("Data Export", "Your data exported to " + os.path.basename(fln) + " successfully", parent=self.root)
         except Exception as e:
