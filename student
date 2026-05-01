@@ -1,0 +1,308 @@
+================ LIBRARIES =================
+from tkinter import *
+from tkinter import ttk, messagebox
+import pyodbc
+import cv2
+import os
+
+class Face_Recognition_System1:
+    def __init__(self, root):
+        self.root = root
+        self.root.geometry("1200x800+0+0")
+        self.root.title("Face Recognition System")
+        self.root.resizable(False, False)
+
+        # ================= VARIABLES =================
+        self.var_dep = StringVar()
+        self.var_course = StringVar()
+        self.var_year = StringVar()
+        self.var_semester = StringVar()
+
+        self.var_std_id = StringVar()
+        self.var_std_name = StringVar()
+        self.var_div = StringVar()
+        self.var_roll = StringVar()
+
+        self.var_gender = StringVar()
+        self.var_dob = StringVar()
+        self.var_email = StringVar()
+        self.var_phone = StringVar()
+        self.var_address = StringVar()
+        self.var_teacher = StringVar()
+
+        self.var_radio = StringVar()
+
+        # ================= TITLE =================
+        Label(self.root, text="STUDENT MANAGEMENT SYSTEM",
+              font=("times new roman", 25, "bold"),
+              bg="white", fg="darkgreen").place(x=0, y=0, width=1200, height=45)
+
+        # ================= MAIN FRAME =================
+        main_frame = Frame(self.root, bd=2, bg="white")
+        main_frame.place(x=10, y=60, width=1180, height=720)
+
+        # ================= LEFT FRAME =================
+        Left_frame = LabelFrame(main_frame, bd=2, bg="white",
+                                text="Student Details",
+                                font=("times new roman", 12, "bold"))
+        Left_frame.place(x=10, y=10, width=550, height=700)
+
+        # ================= COURSE FRAME =================
+        course_frame = LabelFrame(Left_frame, bd=2, bg="white",
+                                  text="Current course information",
+                                  font=("times new roman", 12, "bold"))
+        course_frame.place(x=5, y=10, width=540, height=130)
+
+        Label(course_frame, text="Department").grid(row=0, column=0, padx=10, pady=5)
+        ttk.Combobox(course_frame, textvariable=self.var_dep,
+                     values=["Select Department", "CS", "IT", "DFCS", "PSYCHOLOGY", "DS", "SE"]).grid(row=0, column=1)
+
+        Label(course_frame, text="Course").grid(row=0, column=2)
+        ttk.Combobox(course_frame, textvariable=self.var_course,
+                     values=["Select Course", "BSCS", "BSDFCS", "BSIT", "BSSE"]).grid(row=0, column=3)
+
+        Label(course_frame, text="Year").grid(row=1, column=0)
+        ttk.Combobox(course_frame, textvariable=self.var_year,
+                     values=["Select Year", "2020", "2021", "2022", "2023", "2024", "2025", "2026"]).grid(row=1, column=1)
+
+        Label(course_frame, text="Semester").grid(row=1, column=2)
+        ttk.Combobox(course_frame, textvariable=self.var_semester,
+                     values=["Select Semester", "1", "2", "3", "4", "5", "6", "7", "8"]).grid(row=1, column=3)
+
+            # ================= STUDENT FRAME =================
+        student_frame = LabelFrame(Left_frame, bd=2, bg="white",
+                                   text="Class Student information",
+                                   font=("times new roman", 12, "bold"))
+        student_frame.place(x=5, y=150, width=540, height=220)
+
+        Label(student_frame, text="StudentID", bg="white").grid(row=0, column=0, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_std_id, width=15).grid(row=0, column=1, padx=5, pady=3)
+
+        Label(student_frame, text="Student Name", bg="white").grid(row=0, column=2, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_std_name, width=15).grid(row=0, column=3, padx=5, pady=3)
+
+        Label(student_frame, text="Class Division", bg="white").grid(row=1, column=0, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_div, width=15).grid(row=1, column=1, padx=5, pady=3)
+
+        Label(student_frame, text="Roll No", bg="white").grid(row=1, column=2, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_roll, width=15).grid(row=1, column=3, padx=5, pady=3)
+
+        Label(student_frame, text="Gender", bg="white").grid(row=2, column=0, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_gender, width=15).grid(row=2, column=1, padx=5, pady=3)
+
+        Label(student_frame, text="DOB", bg="white").grid(row=2, column=2, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_dob, width=15).grid(row=2, column=3, padx=5, pady=3)
+
+        Label(student_frame, text="Email", bg="white").grid(row=3, column=0, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_email, width=15).grid(row=3, column=1, padx=5, pady=3)
+
+        Label(student_frame, text="Phone No", bg="white").grid(row=3, column=2, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_phone, width=15).grid(row=3, column=3, padx=5, pady=3)
+
+        Label(student_frame, text="Address", bg="white").grid(row=4, column=0, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_address, width=15).grid(row=4, column=1, padx=5, pady=3)
+
+        Label(student_frame, text="Teacher Name", bg="white").grid(row=4, column=2, padx=5, pady=3, sticky=W)
+        Entry(student_frame, textvariable=self.var_teacher, width=15).grid(row=4, column=3, padx=5, pady=3)
+
+        # ================= RADIO BUTTON =================
+        Radiobutton(Left_frame, text="Take Photo Sample",
+                    variable=self.var_radio, value="Yes").place(x=10, y=380)
+        Radiobutton(Left_frame, text="No Photo Sample",
+                    variable=self.var_radio, value="No").place(x=200, y=380)
+
+        # ================= BUTTONS =================
+        btn_frame = Frame(Left_frame, bd=2, relief=RIDGE, bg="white")
+        btn_frame.place(x=5, y=420, width=540, height=120)
+
+        Button(btn_frame, text="Save", bg="blue", fg="white", command=self.add_data).place(x=0, y=0, width=135, height=30)
+        Button(btn_frame, text="Update", bg="blue", fg="white", command=self.update_data).place(x=135, y=0, width=135, height=30)
+        Button(btn_frame, text="Delete", bg="blue", fg="white", command=self.delete_data).place(x=270, y=0, width=135, height=30)
+        Button(btn_frame, text="Reset", bg="blue", fg="white", command=self.reset_data).place(x=405, y=0, width=135, height=30)
+
+        Button(btn_frame, text="Take Photo Sample", bg="blue", fg="white", command=self.generate_dataset).place(x=0, y=40, width=270, height=30)
+        Button(btn_frame, text="Update Photo Sample", bg="blue", fg="white", command=self.update_dataset).place(x=270, y=40, width=270, height=30)
+        # ========== SAVE ==========
+    def add_data(self):
+        if self.var_dep.get() == "" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
+            messagebox.showerror("Error", "All fields are required", parent=self.root)
+        else:
+            conn = pyodbc.connect(
+                'DRIVER={SQL Server};'
+                'SERVER=DESKTOP-MJ246J1;'
+                'DATABASE=face_recognition;'
+                'Trusted_Connection=yes;'
+            )
+            cursor = conn.cursor()
+            sql = """
+                INSERT INTO student (
+                    dep, course, year, semester, student_id, name, division,
+                    roll, gender, dob, email, phone, address, teacher, photo_sample
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            values = (
+                self.var_dep.get(), self.var_course.get(), self.var_year.get(), self.var_semester.get(),
+                self.var_std_id.get(), self.var_std_name.get(), self.var_div.get(), self.var_roll.get(),
+                self.var_gender.get(), self.var_dob.get(), self.var_email.get(), self.var_phone.get(),
+                self.var_address.get(), self.var_teacher.get(), self.var_radio.get()
+            )
+            cursor.execute(sql, values)
+            conn.commit()
+            conn.close()
+            self.fetch_data()
+            messagebox.showinfo("Success", "Student details added successfully", parent=self.root)
+
+    # ========== FETCH ==========
+    def fetch_data(self):
+        conn = pyodbc.connect(
+            'DRIVER={SQL Server};'
+            'SERVER=DESKTOP-MJ246J1;'
+            'DATABASE=face_recognition;'
+            'Trusted_Connection=yes;'
+        )
+        cursor = conn.cursor()
+        cursor.execute("SELECT TOP 100 * FROM student")
+        data = cursor.fetchall()
+
+        if len(data) != 0:
+            self.student_table.delete(*self.student_table.get_children())
+            for row in data:
+                self.student_table.insert("", END, values=tuple(row))
+
+        conn.close()
+
+    # ========== CURSOR ==========
+    def get_cursor(self, event=""):
+        cursor_focus = self.student_table.focus()
+        content = self.student_table.item(cursor_focus)
+        data = content["values"]
+
+        if data:
+            self.var_dep.set(data[0]); self.var_course.set(data[1]); self.var_year.set(data[2]); self.var_semester.set(data[3])
+            self.var_std_id.set(data[4]); self.var_std_name.set(data[5]); self.var_div.set(data[6]); self.var_roll.set(data[7])
+            self.var_gender.set(data[8]); self.var_dob.set(data[9]); self.var_email.set(data[10]); self.var_phone.set(data[11])
+            self.var_address.set(data[12]); self.var_teacher.set(data[13]); self.var_radio.set(data[14])
+
+    # ========== UPDATE ==========
+    def update_data(self):
+        if self.var_dep.get() == "Select Department" or self.var_std_name.get() == "" or self.var_std_id.get() == "":
+            messagebox.showerror("Error", "All Fields are required", parent=self.root)
+        else:
+            Update = messagebox.askyesno("Update", "Do you want to update this student details?", parent=self.root)
+            if Update > 0:
+                conn = pyodbc.connect(
+                    'DRIVER={SQL Server};'
+                    'SERVER=DESKTOP-MJ246J1;'
+                    'DATABASE=face_recognition;'
+                    'Trusted_Connection=yes;'
+                )
+                cursor = conn.cursor()
+                sql = """
+                    UPDATE student SET
+                        dep=?, course=?, year=?, semester=?, name=?, division=?,
+                        roll=?, gender=?, dob=?, email=?, phone=?, address=?,
+                        teacher=?, photo_sample=?
+                    WHERE student_id=?
+                """
+                values = (
+                    self.var_dep.get(), self.var_course.get(), self.var_year.get(), self.var_semester.get(),
+                    self.var_std_name.get(), self.var_div.get(), self.var_roll.get(), self.var_gender.get(),
+                    self.var_dob.get(), self.var_email.get(), self.var_phone.get(), self.var_address.get(),
+                    self.var_teacher.get(), self.var_radio.get(), self.var_std_id.get()
+                )
+                cursor.execute(sql, values)
+                conn.commit()
+                conn.close()
+                self.fetch_data()
+                messagebox.showinfo("Success", "Student details successfully updated", parent=self.root)
+
+    # ========== DELETE ==========
+    def delete_data(self):
+        if self.var_std_id.get() == "":
+            messagebox.showerror("Error", "Student ID required", parent=self.root)
+        else:
+            Delete = messagebox.askyesno("Delete", "Do you want to delete this student?", parent=self.root)
+            if Delete > 0:
+                conn = pyodbc.connect(
+                    'DRIVER={SQL Server};'
+                    'SERVER=DESKTOP-MJ246J1;'
+                    'DATABASE=face_recognition;'
+                    'Trusted_Connection=yes;'
+                )
+                cursor = conn.cursor()
+                sql = "DELETE FROM student WHERE student_id=?"
+                cursor.execute(sql, (self.var_std_id.get(),))
+                conn.commit()
+                conn.close()
+                self.fetch_data()
+                messagebox.showinfo("Success", "Student deleted successfully", parent=self.root)
+
+    # ========== RESET ==========
+    def reset_data(self):
+        self.var_dep.set(""); self.var_course.set(""); self.var_year.set(""); self.var_semester.set("")
+        self.var_std_id.set(""); self.var_std_name.set(""); self.var_div.set(""); self.var_roll.set("")
+        self.var_gender.set(""); self.var_dob.set(""); self.var_email.set(""); self.var_phone.set("")
+        self.var_address.set(""); self.var_teacher.set(""); self.var_radio.set("")
+        # ========== Generate dataset ==========
+    def generate_dataset(self):
+        self._capture_images("New images captured successfully!")
+
+    # ========== Update dataset ==========
+    def update_dataset(self):
+        self._capture_images("Images updated successfully!")
+
+    # ========== Shared capture logic ==========
+    def _capture_images(self, success_message):
+        try:
+            os.makedirs("data", exist_ok=True)
+            face_classifier = cv2.CascadeClassifier(
+                r"D:\chrome downloads\face recognition\haarcascade_frontalface_default.xml"
+            )
+            if face_classifier.empty():
+                messagebox.showerror("Error", "Failed to load Haarcascade XML file", parent=self.root)
+                return
+
+            def face_cropped(img):
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+                for (x, y, w, h) in faces:
+                    return img[y:y+h, x:x+w]
+                return None
+
+            cap = cv2.VideoCapture(0)
+            img_id = 0
+
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+
+                face = face_cropped(frame)
+                if face is not None:
+                    img_id += 1
+                    face = cv2.resize(face, (450, 450))
+                    face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+
+                    file_path = f"data/user.{self.var_std_id.get()}.{img_id}.jpg"
+                    cv2.imwrite(file_path, face)
+
+                    cv2.imshow("Face Capture", face)
+
+                if cv2.waitKey(1) == 13 or img_id == 100:
+                    break
+
+            cap.release()
+            cv2.destroyAllWindows()
+            messagebox.showinfo("Result", success_message, parent=self.root)
+
+        except Exception as es:
+            messagebox.showerror("Error", f"Due To: {str(es)}", parent=self.root)
+
+
+if __name__ == "__main__":
+    root = Tk()
+    obj = Face_Recognition_System1(root)
+    root.mainloop()
+hshe#
+if
